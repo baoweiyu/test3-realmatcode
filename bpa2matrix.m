@@ -1,9 +1,9 @@
-%¶ÁÈ¡BPA¸ñÊ½Êı¾İÎÄ¼ş£¬Éú³É½Úµãµ¼ÄÉ¾ØÕó
-%´ËÎÄ¼ş×îºó±à¼­ÓÚ20160329
+%è¯»å–BPAæ ¼å¼æ•°æ®æ–‡ä»¶ï¼Œç”ŸæˆèŠ‚ç‚¹å¯¼çº³çŸ©é˜µ
+%æ­¤æ–‡ä»¶æœ€åç¼–è¾‘äº20160329
 function [bus,branch,trans,matrix] = bpa2matrix()
-%¶ÁÈëBPA¸ñÊ½Êı¾İÎÄ¼şµÄËùÓĞÄÚÈİ
-disp(['¶ÁÈëBPAÊı¾İÎÄ¼ş','bpafile','µÄÄÚÈİ']);
-%´ò¿ªÊı¾İÎÄ¼ş
+%è¯»å…¥BPAæ ¼å¼æ•°æ®æ–‡ä»¶çš„æ‰€æœ‰å†…å®¹
+disp(['è¯»å…¥BPAæ•°æ®æ–‡ä»¶','bpafile','çš„å†…å®¹']);
+%æ‰“å¼€æ•°æ®æ–‡ä»¶
 fid = fopen('bpafile','r');
 bpainfo = cell(5000,1);
 ii=1;
@@ -12,14 +12,15 @@ newline = fgetl(fid);
     bpainfo(ii) = {newline};
     ii = ii + 1;
 end
-%¶ÔÎ´ÓÃµ½µÄÊı×éÔªËØÖÃÁã
+NULL = 1;
+%å¯¹æœªç”¨åˆ°çš„æ•°ç»„å…ƒç´ ç½®é›¶
 for jj = ii : 5000
     bpainfo(ii) = [];
 end
-%¹Ø±ÕÊı¾İÎÄ¼ş
+%å…³é—­æ•°æ®æ–‡ä»¶
 fclose(fid);
 
-% ¼ÆËã½Úµã¸öÊı
+% è®¡ç®—èŠ‚ç‚¹ä¸ªæ•°
 busnumber = 0;
 for ii = 1 : length(bpainfo)
     thisline = bpainfo{ii};
@@ -28,12 +29,12 @@ for ii = 1 : length(bpainfo)
     end
 end
 
-%¶ÁÈë½ÚµãÊı¾İ
+%è¯»å…¥èŠ‚ç‚¹æ•°æ®
 t=0;
 for i = 1 :length(bpainfo)
     thisline = bpainfo{i};
     
-    %ÓÃ¿Õ¸ñ²¹Æë²»ÂúµÄĞĞ
+    %ç”¨ç©ºæ ¼è¡¥é½ä¸æ»¡çš„è¡Œ
     bb = size(thisline); 
     for ii=1:80
         cc = bb(1,2) + ii;
@@ -43,22 +44,22 @@ for i = 1 :length(bpainfo)
     if ( strcmp(thisline(1), 'B') )
         t=t+1;
         if ( strcmp(thisline(2), ' ') ) 
-            bus(t).type = 1; %PQ½Úµã
+            bus(t).type = 1; %PQèŠ‚ç‚¹
         elseif ( strcmp(thisline(2), 'Q') )
-            bus(t).type = 2; %PV½Úµã
+            bus(t).type = 2; %PVèŠ‚ç‚¹
         elseif ( strcmp(thisline(2), 'S') )
-            bus(t).type = 3; %Vtheta½Úµã
+            bus(t).type = 3; %VthetaèŠ‚ç‚¹
         end
-        %½Úµã±àºÅ
+        %èŠ‚ç‚¹ç¼–å·
         a = str2num(thisline(11:14));
         bus(t).number = a;
-        %½Úµã»ù×¼µçÑ¹
+        %èŠ‚ç‚¹åŸºå‡†ç”µå‹
         a = str2num(thisline(15:18));
         bus(t).voltage = a;
-        %½Úµã·ÖÇø
+        %èŠ‚ç‚¹åˆ†åŒº
         a = str2num(thisline(19:20));
         bus(t).zone = a;
-        %½Úµãºã¶¨¸ººÉ
+        %èŠ‚ç‚¹æ’å®šè´Ÿè·
         a = str2num(thisline(21:25)); 
         if ~isnan(a)
             bus(t).PL = a/100;
@@ -69,25 +70,25 @@ for i = 1 :length(bpainfo)
             bus(t).QL = a/100;
         else bus(t).QL = 0;
         end
-        %×î´óÓĞ¹¦³öÁ¦
+        %æœ€å¤§æœ‰åŠŸå‡ºåŠ›
         a = str2num(thisline(39:42));
         bus(t).Pmax = a;
-        %Êµ¼ÊÓĞ¹¦³öÁ¦
+        %å®é™…æœ‰åŠŸå‡ºåŠ›
         a = str2num(thisline(43:47));
        if ~isnan(a)
             bus(t).Pgen = a/100;
         else bus(t).Pgen = 0;
        end
-       %Êµ¼ÊÎŞ¹¦³öÁ¦
+       %å®é™…æ— åŠŸå‡ºåŠ›
        a=str2num(thisline(48:52));
        if ~isnan(a)
        bus(t).Qgen=a/100;
        else bus(t).Qgen=0;
        end
-        %×îĞ¡ÎŞ¹¦³öÁ¦
+        %æœ€å°æ— åŠŸå‡ºåŠ›
         a = str2num(thisline(53:57));
         bus(t).Qmin = a;
-        %°²ÅÅµÄµçÑ¹Öµ
+        %å®‰æ’çš„ç”µå‹å€¼
         a = str2num(thisline(58:61));
         if a>10
             a=a/1000;
@@ -96,84 +97,84 @@ for i = 1 :length(bpainfo)
     end
 end
         
-%¶ÁÈëÖ§Â·Êı¾İºÍ±äÑ¹Æ÷Êı¾İ£¬¶ÔÃ¿¸ö½ÚµãÉú³É×Ôµ¼ÄÉºÍ»¥µ¼ÄÉ
+%è¯»å…¥æ”¯è·¯æ•°æ®å’Œå˜å‹å™¨æ•°æ®ï¼Œå¯¹æ¯ä¸ªèŠ‚ç‚¹ç”Ÿæˆè‡ªå¯¼çº³å’Œäº’å¯¼çº³
 t1 = 0;
 t2 = 0;
 for ii = 1 :length(bpainfo)
     thisline = bpainfo{ii};
     
-    %ÓÃ¿Õ¸ñ²¹Æë²»ÂúµÄĞĞ
+    %ç”¨ç©ºæ ¼è¡¥é½ä¸æ»¡çš„è¡Œ
     bb = size(thisline); 
     for ii=1:80
         cc = bb(1,2) + ii;
         thisline( cc ) = ' ';
     end
     
-    %¶ÁÈë¶Ô³ÆÏßÂ·ĞÅÏ¢
+    %è¯»å…¥å¯¹ç§°çº¿è·¯ä¿¡æ¯
     if ( strcmp(thisline(1), 'L')) 
         t1 = t1 + 1;
-        %Ö§Â·ÆğÊ¼½Úµã±àºÅ
+        %æ”¯è·¯èµ·å§‹èŠ‚ç‚¹ç¼–å·
         a = str2num(thisline( 11 : 14 ));
         branch(t1).start = a; 
-        %Ö§Â·Ä©¶Ë½Úµã±àºÅ
+        %æ”¯è·¯æœ«ç«¯èŠ‚ç‚¹ç¼–å·
         a = str2num(thisline( 24 : 27 ));
         branch(t1).off = a; 
-        %Ö§Â·µç×è
+        %æ”¯è·¯ç”µé˜»
         a = str2num(thisline( 39 : 44 ));
         branch(t1).R = a; 
-        %Ö§Â·µç¿¹
+        %æ”¯è·¯ç”µæŠ—
         a = str2num(thisline( 45 : 50 ));
         branch(t1).X = a; 
-        %Ö§Â·µçµ¼
+        %æ”¯è·¯ç”µå¯¼
         a = str2num(thisline( 51 : 56 ));
         if ~isnan(a)
             branch(t1).G = a;
         else branch(t1).G = 0; 
         end
-        %Ö§Â·µçÄÉ
+        %æ”¯è·¯ç”µçº³
         a = str2num(thisline( 57 : 62 ));
         if ~isnan(a)
             branch(t1).B = a;
         else branch(t1).B = 0; 
         end
     
-    %¶ÁÈë±äÑ¹Æ÷ĞÅÏ¢
+    %è¯»å…¥å˜å‹å™¨ä¿¡æ¯
     elseif (strcmp(thisline(1), 'T'))
         t2 = t2 + 1;
-        %±äÑ¹Æ÷Ö§Â·ÆğÊ¼½Úµã±àºÅ
+        %å˜å‹å™¨æ”¯è·¯èµ·å§‹èŠ‚ç‚¹ç¼–å·
         a = str2num(thisline( 11 : 14 ));
         trans(t2).start = a; 
-        %±äÑ¹Æ÷Ö§Â·Ä©¶Ë½Úµã±àºÅ
+        %å˜å‹å™¨æ”¯è·¯æœ«ç«¯èŠ‚ç‚¹ç¼–å·
         a = str2num(thisline( 24 : 27 ));
         trans(t2).off = a; 
-        %±äÑ¹Æ÷µÈĞ§µç×è
+        %å˜å‹å™¨ç­‰æ•ˆç”µé˜»
         a = str2num(thisline( 39 : 44 ));
         if ~isnan(a)
             trans(t2).R = a;
         else trans(t2).R = 0; 
         end
-        %±äÑ¹Æ÷Â©¿¹
+        %å˜å‹å™¨æ¼æŠ—
         a = str2num(thisline( 45 : 50 ));
         if ~isnan(a)
             trans(t2).X = a;
         else trans(t2).X = 0;
         end
-        %±äÑ¹Æ÷µÈĞ§µçµ¼
+        %å˜å‹å™¨ç­‰æ•ˆç”µå¯¼
         a = str2num(thisline( 51 : 56 ));
         if ~isnan(a)
             trans(t2).G = a;
         else trans(t2).G = 0; 
         end
-        %±äÑ¹Æ÷¼¤´ÅµçÄÉ
+        %å˜å‹å™¨æ¿€ç£ç”µçº³
         a = str2num(thisline( 57 : 62 ));
         if ~isnan(a)
             trans(t2).B = a;
         else trans(t2).B = 0; 
         end        
-        %·Ö½ÓÍ·Î»ÖÃ1
+        %åˆ†æ¥å¤´ä½ç½®1
         a = str2num(thisline( 63 : 67 ));
         trans(t2).position1 =  a;
-        %·Ö½ÓÍ·Î»ÖÃ2
+        %åˆ†æ¥å¤´ä½ç½®2
 		  trans(t2).position2 = 0;
         a = thisline( 68 : 72 );
 		for iii=1:5
@@ -187,12 +188,12 @@ for ii = 1 :length(bpainfo)
 		trans(t2).position2 = str2num(a)/100;
 		end
 		
-        %±äÑ¹Æ÷±ä±È
+        %å˜å‹å™¨å˜æ¯”
         trans(t2).K = trans(t2).position2 / trans(t2).position1;
     end
 end
 
-        %Éú³É½Úµãµ¼ÄÉ¾ØÕó
+        %ç”ŸæˆèŠ‚ç‚¹å¯¼çº³çŸ©é˜µ
         matrix = zeros(busnumber,busnumber);
         for t = 1 : size(branch,2)
             b_start = branch(t).start; 
@@ -201,10 +202,10 @@ end
             X = branch(t).X;
             G = branch(t).G;
             B = branch(t).B;
-            %×Ôµ¼ÄÉ
+            %è‡ªå¯¼çº³
             matrix(b_start , b_start) = matrix(b_start , b_start) + 1 / (R + X*1i) + G + B*1i;
             matrix(b_off , b_off) = matrix(b_off , b_off) + 1 / (R + X*1i) + G + B*1i;
-            %»¥µ¼ÄÉ
+            %äº’å¯¼çº³
             matrix(b_start , b_off) = -1 / (R + X*1i);
             matrix(b_off , b_start) = -1 / (R + X*1i);
         end
@@ -216,10 +217,10 @@ end
             G = trans(t).G;
             B = trans(t).B;
 			K = trans(t).K;
-            %×Ôµ¼ÄÉ
+            %è‡ªå¯¼çº³
             matrix(t_start , t_start) = matrix(t_start , t_start) + 1 / (R + X*1i) + G + B*1i;
             matrix(t_off,t_off) = matrix(t_off , t_off) + 1 / (K*K*(R + X*1i));
-            %»¥µ¼ÄÉ
+            %äº’å¯¼çº³
             matrix(t_start , t_off) = -1 / (K*(R + X*1i));
             matrix(t_off , t_start) = -1 / (K*(R + X*1i));
         end
