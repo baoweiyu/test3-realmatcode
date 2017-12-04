@@ -13,6 +13,7 @@ newline = fgetl(fid);
     ii = ii + 1;
 end
 NULL = 1;
+NULL = 2;
 %对未用到的数组元素置零
 for jj = ii : 5000
     bpainfo(ii) = [];
